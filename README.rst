@@ -2,26 +2,7 @@
 QINCM
 =====
 
-
-.. image:: https://img.shields.io/pypi/v/qincm.svg
-        :target: https://pypi.python.org/pypi/qincm
-
-.. image:: https://img.shields.io/travis/jurjendejong/qincm.svg
-        :target: https://travis-ci.com/jurjendejong/qincm
-
-.. image:: https://readthedocs.org/projects/qincm/badge/?version=latest
-        :target: https://qincm.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-
-.. image:: https://pyup.io/repos/github/jurjendejong/qincm/shield.svg
-     :target: https://pyup.io/repos/github/jurjendejong/qincm/
-     :alt: Updates
-
-
-
 Tool for quickly computing the costs of inland shipping due to limited navigational depth
-
 
 * Free software: MIT license
 * Documentation: https://qincm.readthedocs.io.
@@ -43,11 +24,4 @@ The tool builds on the following input:
 * For each knelpunt the depth is required. Either directly, or through a discharge-depth relation. Either the local discharge, or the discharge at a reference point (Lobith) (using a given discharge distribution)
 * For each combination of knelpunten, the relation between depth and reaction/effect is given
 
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+For further information, a memo is available. 
