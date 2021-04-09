@@ -11,37 +11,60 @@ logging.basicConfig(level=logging.DEBUG,
 
 logger = logging.getLogger(__name__)
 
-#TODO: Better help
 @click.command()
-@click.argument('input', type=click.File('rb'))
-def main(input):
+@click.option('--config', default=None, help="Load a configuration json file or give a json string with all configuration")
+@click.option('--route_depth_costs_file', default="../data/route_depth_costs.json", help='input file of costs per route')
+@click.option('--knelpunt_discharge_depth_file', default="../data/knelpunt_discharge_waterdepth.json", help='input file (or json string) of discharge depth relations')
+@click.option('--reference', default="WA_Nijmegen", help='Name of reference point for global mode')
+@click.option('--mode', default="scenario", help="Type of data input (only [scenario] is implemented)")
+@click.option('--discharges', default=None, help="Required if config not given")
+@click.option('--occurance', default=None, help="Required if config not given")
+def main(config, route_depth_costs_file, knelpunt_discharge_depth_file, reference, mode, discharges, occurance):
 
-    # Allow both reading a json as inputstring and input as filepath
-    if not isinstance(input, dict):
-        logger.info(f'Loading configuration: {input.name}')
+    file_mode = False
 
-        file_mode = True
-        with open(input.name) as fin:
-            input_data = json.load(fin)
+    if config is not None:
+        # Allow both reading a json as inputstring and input as filepath
+
+        # Approximation to check if string is path or dict...
+        isFile = "discharges" not in config
+
+        if isFile:
+            logger.info(f'Loading configuration: {config}')
+
+            file_mode = True
+            with open(config) as fin:
+                input_data = json.load(fin)
+        else:
+            input_data = json.loads(config)
+
+        logger.debug(input_data)
+
+        route_depth_costs_file = input_data["route_depth_costs_file"]
+        knelpunt_discharge_depth_file = input_data["knelpunt_discharge_depth_file"]
+        reference = input_data["reference"]
+        mode = input_data["mode"]
+        discharges = input_data["discharges"]
+        occurance = input_data["occurance"]
     else:
-        # TODO: Test this mode. Does it need conversion?
-        file_mode = False
-        input_data = input.name
+        assert discharges is not None, '[discharges] not given'
+        assert occurance is not None, '[occurance] not given'
 
-    logger.debug(input_data)
+        discharges = json.loads(discharges)
+        occurance = json.loads(occurance)
 
     logger.info('Running configuration')
 
     M = QINCM(
-        route_depth_costs_file=input_data['route_depth_costs_file'],
-        knelpunt_discharge_depth_file=input_data['knelpunt_discharge_depth_file'],
-        reference=input_data['reference']
+        route_depth_costs_file=route_depth_costs_file,
+        knelpunt_discharge_depth_file=knelpunt_discharge_depth_file,
+        reference=reference
     )
 
-    if input_data['mode'] == 'scenario':
+    if mode == 'scenario':
         result = M.costs_for_scenario(
-            discharges=input_data['discharges'],
-            occurance=input_data['occurance']
+            discharges=discharges,
+            occurance=occurance
         )
 
     else:
@@ -53,11 +76,11 @@ def main(input):
     result_pretty.index = [str(i).replace('frozenset(', '').replace(')', '') for i in result_pretty.index]
     result_pretty = result_pretty.to_json()
 
-    logger.debug('\n' + result_pretty)
+    click.echo(result_pretty)
 
     # If we read a file, than also output as file
     if file_mode:
-        outputfile = str(input.name).replace('.json', '_output.json')
+        outputfile = str(config).replace('.json', '_output.json')
         with open(outputfile, 'w') as fout:
             fout.write(result_pretty)
 
