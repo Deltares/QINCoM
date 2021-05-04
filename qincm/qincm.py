@@ -31,21 +31,36 @@ class QINCM:
         self._read_routes_depth_costs(route_depth_costs_file)
         self._read_knelpunt_discharge_depth(knelpunt_discharge_depth_file, reference=reference)
 
-
-    def _costs_at_routes_at_discharge(self, discharges: pd.DataFrame) -> pd.DataFrame:
-        """
-        Compute costs per route per discharge
-
-        param discharges: list of unique discharges. dim1: unique discharges, dim2:
-
-        returns: DataFrame (index: routes, columns: discharges)
-        """
-
+    def _compute_knelpunt_depth(self, discharges):
         depths = {}
         for k in self.knelpunt_names:
             depths[k] = self.knelpunt_discharge_depth[k](discharges[k])
         depths = pd.DataFrame(data=depths, index=discharges.index)
 
+        # if isinstance(discharges, pd.DataFrame):
+        #     depths = {}
+        #     for k in self.knelpunt_names:
+        #         depths[k] = self.knelpunt_discharge_depth[k](discharges[k])
+        #     depths = pd.DataFrame(data=depths, index=discharges.index)
+        # else:
+        #     depths = {}
+        #     for k in self.knelpunt_names:
+        #         depths[k] = self.knelpunt_discharge_depth[k](discharges)
+        #     depths = pd.DataFrame(data=depths, index=discharges)
+
+        return depths
+
+
+    def _costs_at_routes_at_discharge(self, discharges: pd.DataFrame) -> pd.DataFrame:
+        """
+        Compute costs per route per discharge
+
+        param discharges: list of unique discharges. dim1: unique discharges, dim2: knelpunten
+
+        returns: DataFrame (index: routes, columns: discharges)
+        """
+
+        depths = self._compute_knelpunt_depth(discharges)
 
         # For each r (=FrozenList of knelpunten)
         r_costs = {}
@@ -64,16 +79,7 @@ class QINCM:
 
         return costs
 
-
-    def costs_per_discharge(self, discharges: Union) -> pd.DataFrame:
-        """
-        Compute total costs per discharge
-
-        param discharges: list of unique discharges. ALso supports timeseries
-
-        returns: Series (index=discharges)
-        """
-
+    def _compute_local_discharge(self, discharges):
         if np.ndim(discharges) == 1:
             # Only reference discharge is given, compute local discharge from Q-Q-relation
             Q_ref = discharges
@@ -81,7 +87,7 @@ class QINCM:
             if isinstance(discharges, pd.Series):
                 Q_local = pd.DataFrame(index=discharges.index)
             else:
-                Q_local = pd.DataFrame(index=Q_ref)  # The index is only for convience.
+                Q_local = pd.DataFrame(index=Q_ref)  # The index is only for convenience.
 
             for k, QQ in self.knelpunt_discharge_distribution.items():
                 Q_local[k] = QQ(Q_ref)
@@ -93,7 +99,18 @@ class QINCM:
             else:
                 Q_local = pd.DataFrame(data=discharges, columns=k_names)
 
-                Q_local.index = Q_local[self.knelpunt_reference]  # The index is only for convience.
+                Q_local.index = Q_local[self.knelpunt_reference]  # The index is only for convenience.
+        return Q_local
+
+    def costs_per_discharge(self, discharges: Union) -> pd.DataFrame:
+        """
+        Compute total costs per discharge
+
+        param discharges: list of unique discharges. ALso supports timeseries
+
+        returns: Series (index=discharges)
+        """
+        Q_local = self._compute_local_discharge(discharges)
 
         costs = self._costs_at_routes_at_discharge(Q_local)
         return costs
@@ -119,7 +136,7 @@ class QINCM:
 
             # Compute delta costs
             if delta:
-                costs_no_problems = self.costs_per_discharge([99999999])
+                costs_no_problems = self.costs_per_discharge([99999999])  #TODO: This way is not good for depths that are included as constants...
                 costs = costs.subtract(costs_no_problems.values, axis=1)
 
             costs_occurance = costs.multiply(occurance, axis=0)
@@ -228,13 +245,13 @@ class QINCM:
             Q = [float(q) for q in Q]
             D = [float(d) for d in D]
 
-            # Make this an interpolation function, extrapolation=constant
+            # Make this an interpolation function, incl. extrapolation
             discharge_depth_function = interp1d(
                 x=Q,
                 y=D,
                 kind='linear',
                 bounds_error=False,
-                fill_value=tuple([D[0], D[-1]]),
+                fill_value='extrapolate',
             )
             self.knelpunt_discharge_depth[k] = discharge_depth_function
             knelpunt_discharge[k] = Q
@@ -252,13 +269,51 @@ class QINCM:
                 y=Q,
                 kind='linear',
                 bounds_error=False,
-                fill_value=tuple([Q[0], Q[-1]]),
+                fill_value='extrapolate',
             )
 
             self.knelpunt_discharge_distribution[k] = Qref_Q
 
 
+    def stats_knelpunten(self, Qmin=500, Qmax=2000):
+        """
+        for each discharge determine the number of trips that is influenced by the knelpunt (alltrips)
+        for each knelpunt show only the trips that are limited by that specific point
 
+        return alltrips, mintrips
+        """
+
+        alltrips = {}
+        mintrips = {}
+        routes = self.routes_depth_costs.keys()
+
+        discharge_series = np.linspace(Qmin, Qmax, 100)
+        Q_local = self._compute_local_discharge(discharge_series)
+        QH = self._compute_knelpunt_depth(Q_local)
+
+        for r in routes:
+            r_QH = QH[r]
+
+            for k in r:
+
+                depth = r_QH[k].values
+
+                # Get number of affected trips (per waterdepth)
+                alltrips[(r, k)] = self.routes_depth_costs[r](depth)
+                alltrips[(r, k)] = pd.Series(
+                    data=alltrips[(r, k)],
+                    index=discharge_series
+                )
+
+                k_minimal = r_QH.idxmin(axis=1) == k
+                mintrips[(r, k)] = alltrips[(r, k)].loc[k_minimal]
+
+        alltrips = pd.concat(alltrips)
+        mintrips = pd.concat(mintrips)
+
+        alltrips_sum = alltrips.unstack(level=1).sum(axis=0, level=1)
+        mintrips_sum = mintrips.unstack(level=1).sum(axis=0, level=1)
+        return alltrips_sum, mintrips_sum
 
 if __name__ == '__main__':
 

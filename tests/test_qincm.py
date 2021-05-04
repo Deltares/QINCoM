@@ -37,7 +37,7 @@ class test_pyFIS(unittest.TestCase):
         discharges = np.linspace(500, 3000, 26)
         a = self.M.costs_per_discharge(discharges)
 
-        self.assertAlmostEqual(a.loc[2000].sum() / a.loc[500].sum(), 0.6709521636026798, 5)
+        self.assertAlmostEqual(a.loc[2000].sum() / a.loc[500].sum(), 0.5544267242942754, 5)
 
     def test_000_local(self):
         # Test local discharge
@@ -47,7 +47,7 @@ class test_pyFIS(unittest.TestCase):
         discharges = np.random.rand(20, len(k)) * 3000
         a = self.M.costs_per_discharge(discharges)
 
-        self.assertAlmostEqual(a.iloc[0].sum() / a.iloc[-1].sum(), 0.6918738661663258, 5)
+        self.assertAlmostEqual(a.iloc[0].sum() / a.iloc[-1].sum(), 0.5002584826807982, 5)
 
 
     def test_001_global_scenario(self):
@@ -60,7 +60,7 @@ class test_pyFIS(unittest.TestCase):
 
         a = self.M.costs_for_scenario(discharges, occurance)
 
-        self.assertAlmostEqual(a.sum(), 160988118.43376625, 5)
+        self.assertAlmostEqual(a.sum(), 205410840.49644443, 5)
 
     def test_001_local_scenario(self):
         k = self.M.knelpunt_names
@@ -75,7 +75,7 @@ class test_pyFIS(unittest.TestCase):
 
         a = self.M.costs_for_scenario(discharges, occurance)
 
-        self.assertAlmostEqual(a.sum(),  333765998.87481344, 5)
+        self.assertAlmostEqual(a.sum(),  763763903.6712539, 5)
 
     def test_002_global_scenario_timeseries(self):
         discharges = np.linspace(500, 3000, 365)
@@ -85,4 +85,7 @@ class test_pyFIS(unittest.TestCase):
 
         a = self.M.costs_for_scenario(timeseries)
 
-        self.assertAlmostEqual(a.sum(), 108070080.08906238, 5)
+        self.assertAlmostEqual(a.sum(), 120370393.63838905, 5)
+
+    def test_003_stats(self):
+        self.M.stats_knelpunten()
