@@ -14,8 +14,6 @@ from qincm.qincm import QINCM
 class test_pyFIS(unittest.TestCase):
     """Tests for `klimaatbestendige_netwerken` package."""
 
-    export_dir = Path('export_pyFIS')
-
 
     def setUp(self):
         """Set up test fixtures"""
@@ -29,8 +27,6 @@ class test_pyFIS(unittest.TestCase):
             reference='WA_Nijmegen'
         )
 
-        # if not self.export_dir.exists():
-        #     self.export_dir.mkdir()
 
     def test_000_global(self):
         # Test global discharge
