@@ -285,35 +285,54 @@ class QINCM:
 
         alltrips = {}
         mintrips = {}
+        mintrips_increase = {}
+        
         routes = self.routes_depth_costs.keys()
 
         discharge_series = np.linspace(Qmin, Qmax, 100)
+        
+        # Get discharge per knelpunt
         Q_local = self._compute_local_discharge(discharge_series)
-        QH = self._compute_knelpunt_depth(Q_local)
+        
+        # Get depth per knelpunt and convert to draught by using ukc
+        QH = self._compute_knelpunt_depth(Q_local) - self.ukc
 
         for r in routes:
+            # Depth on route
             r_QH = QH[r]
-
+            
+            # Get total costs on this route
+            depth_for_route = r_QH.min(axis=1).fillna(999)
+            costs_for_route = pd.Series(
+                data = self.routes_depth_costs[r](depth_for_route),
+                index = discharge_series
+            )
+            costs_for_route_increase = costs_for_route - costs_for_route.iloc[-1]
+            
             for k in r:
 
                 depth = r_QH[k].values
 
                 # Get number of affected trips (per waterdepth)
-                alltrips[(r, k)] = self.routes_depth_costs[r](depth)
+                costs_for_all_passing_trips = self.routes_depth_costs[r](depth)
                 alltrips[(r, k)] = pd.Series(
-                    data=alltrips[(r, k)],
+                    data=costs_for_all_passing_trips,
                     index=discharge_series
                 )
-
+                
+                # Only select those levels where k is the minimum depth on the route
                 k_minimal = r_QH.idxmin(axis=1) == k
-                mintrips[(r, k)] = alltrips[(r, k)].loc[k_minimal]
+                mintrips[(r, k)] = costs_for_route.multiply(k_minimal, axis=0)
+                mintrips_increase[(r, k)] = costs_for_route_increase.multiply(k_minimal, axis=0)
 
         alltrips = pd.concat(alltrips)
         mintrips = pd.concat(mintrips)
+        mintrips_increase = pd.concat(mintrips_increase)
 
         alltrips_sum = alltrips.unstack(level=1).sum(axis=0, level=1)
         mintrips_sum = mintrips.unstack(level=1).sum(axis=0, level=1)
-        return alltrips_sum, mintrips_sum
+        mintrips_increase_sum = mintrips_increase.unstack(level=1).sum(axis=0, level=1)
+        return alltrips_sum, mintrips_sum, mintrips_increase_sum
 
 if __name__ == '__main__':
 
