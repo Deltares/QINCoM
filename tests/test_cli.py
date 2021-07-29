@@ -6,7 +6,17 @@ import json
 
 class test_cli(unittest.TestCase):
 
-    test1_output = {"":0.0,"{'IJ_Velp'}":317320.0089127324,"{'BR_Duitsland'}":0.0,"{'BR_Duitsland', 'IJ_Velp'}":4170689.2257926492,"{'WA_St. Andries'}":2010338.7697387554,"{'WA_Nijmegen'}":742437.8811139499,"{'IJ_Velp', 'WA_Nijmegen'}":992321.9731033762,"{'BR_Duitsland', 'WA_Nijmegen'}":27051328.0352801345,"{'WA_St. Andries', 'WA_Nijmegen'}":2142949.61544467,"{'WA_St. Andries', 'IJ_Velp', 'WA_Nijmegen'}":698496.8471291377,"{'BR_Duitsland', 'WA_St. Andries', 'WA_Nijmegen'}":122862236.0855599493}
+    test1_output = {'': 0.0,
+                 "{'IJ_Velp'}": 411519.8534753271,
+                 "{'BR_Duitsland'}": 0.0,
+                 "{'BR_Duitsland', 'IJ_Velp'}": 5761542.594600908,
+                 "{'WA_St. Andries'}": 2723179.9491901197,
+                 "{'WA_Nijmegen'}": 1014876.6571572875,
+                 "{'WA_Nijmegen', 'IJ_Velp'}": 1351983.7958166604,
+                 "{'WA_Nijmegen', 'BR_Duitsland'}": 35856392.97613928,
+                 "{'WA_Nijmegen', 'WA_St. Andries'}": 3056996.134802712,
+                 "{'WA_Nijmegen', 'WA_St. Andries', 'IJ_Velp'}": 1191026.5080204958,
+                 "{'WA_Nijmegen', 'WA_St. Andries', 'BR_Duitsland'}": 160468285.41541624}
 
     def test_CLI_help(self):
         runner = CliRunner()

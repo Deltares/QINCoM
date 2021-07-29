@@ -28,12 +28,13 @@ class test_pyFIS(unittest.TestCase):
         )
 
 
+
     def test_000_global(self):
         # Test global discharge
         discharges = np.linspace(500, 3000, 26)
         a = self.M.costs_per_discharge(discharges)
 
-        self.assertAlmostEqual(a.loc[2000].sum() / a.loc[500].sum(), 0.5544267242942754, 5)
+        self.assertAlmostEqual(a.loc[2000].sum() / a.loc[500].sum(), 0.54731428, 5)
 
     def test_000_local(self):
         # Test local discharge
@@ -43,7 +44,7 @@ class test_pyFIS(unittest.TestCase):
         discharges = np.random.rand(20, len(k)) * 3000
         a = self.M.costs_per_discharge(discharges)
 
-        self.assertAlmostEqual(a.iloc[0].sum() / a.iloc[-1].sum(), 0.5002584826807982, 5)
+        self.assertAlmostEqual(a.iloc[0].sum() / a.iloc[-1].sum(), 0.49930185, 5)
 
 
     def test_001_global_scenario(self):
@@ -56,7 +57,7 @@ class test_pyFIS(unittest.TestCase):
 
         a = self.M.costs_for_scenario(discharges, occurance)
 
-        self.assertAlmostEqual(a.sum(), 205410840.49644443, 5)
+        self.assertAlmostEqual(a.sum(), 211835803.8732196, 5)
 
     def test_001_local_scenario(self):
         k = self.M.knelpunt_names
@@ -71,7 +72,7 @@ class test_pyFIS(unittest.TestCase):
 
         a = self.M.costs_for_scenario(discharges, occurance)
 
-        self.assertAlmostEqual(a.sum(),  763763903.6712539, 5)
+        self.assertAlmostEqual(a.sum(),  766789671.5229554, 5)
 
     def test_002_global_scenario_timeseries(self):
         discharges = np.linspace(500, 3000, 365)
@@ -81,7 +82,10 @@ class test_pyFIS(unittest.TestCase):
 
         a = self.M.costs_for_scenario(timeseries)
 
-        self.assertAlmostEqual(a.sum(), 120370393.63838905, 5)
+        self.assertAlmostEqual(a.sum(), 126109151.65011567, 5)
 
     def test_003_stats(self):
-        self.M.stats_knelpunten()
+        alltrips_sum, mintrips_sum, mintrips_increase_sum = self.M.stats_knelpunten()
+        self.assertAlmostEqual(alltrips_sum.loc[500, 'WA_Nijmegen'], 8400926.746089742, 5)
+        self.assertAlmostEqual(mintrips_sum.loc[500, 'WA_Nijmegen'], 8400926.746089742, 5)
+        self.assertAlmostEqual(mintrips_increase_sum.loc[500, 'WA_Nijmegen'], 5046180.066089741, 5)
