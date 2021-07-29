@@ -13,15 +13,15 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option('--config', default=None, help="Load a configuration json file or give a json string with all configuration")
-@click.option('--route_depth_costs_file', default="../data/route_depth_costs.json", help='input file of costs per route')
-@click.option('--knelpunt_discharge_depth_file', default="../data/knelpunt_discharge_waterdepth.json", help='input file (or json string) of discharge depth relations')
+@click.option('--route_depth_costs_file', default="../data/testmodel_4p/route_depth_costs.json", help='input file of costs per route')
+@click.option('--knelpunt_discharge_depth_file', default="../data/testmodel_4p/knelpunt_discharge_waterdepth.json", help='input file (or json string) of discharge depth relations')
 @click.option('--reference', default="WA_Nijmegen", help='Name of reference point for global mode')
 @click.option('--mode', default="scenario", help="Type of data input (only [scenario] is implemented)")
 @click.option('--discharges', default=None, help="Required if config not given")
 @click.option('--occurance', default=None, help="Required if config not given")
 def main(config, route_depth_costs_file, knelpunt_discharge_depth_file, reference, mode, discharges, occurance):
 
-    file_mode = False
+    file_mode = False  # Output to file or return code
 
     if config is not None:
         # Allow both reading a json as inputstring and input as filepath
