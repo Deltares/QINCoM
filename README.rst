@@ -8,6 +8,23 @@ Tool for quickly computing the costs of inland shipping due to limited navigatio
 * Documentation: https://qincm.readthedocs.io.
 
 
+How to install
+--------------
+With these instructions you can create a new environment and install the package::
+
+    conda create --name test_qincm
+    activate test_qincm
+
+    pip install .
+
+    qincm --help
+
+    qincm
+          --route_depth_costs_file data\testmodel_4p\route_depth_costs.json
+          --knelpunt_discharge_depth_file data\testmodel_4p\knelpunt_discharge_waterdepth.json
+          --discharges [900,1000,1100,1200]
+          --occurance [5,10,20,40]
+
 Features
 --------
 
@@ -24,4 +41,4 @@ The tool builds on the following input:
 * For each knelpunt the depth is required. Either directly, or through a discharge-depth relation. Either the local discharge, or the discharge at a reference point (Lobith) (using a given discharge distribution)
 * For each combination of knelpunten, the relation between depth and reaction/effect is given
 
-For further information, a memo is available. 
+For further information, a memo is available.
