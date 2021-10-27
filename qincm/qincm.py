@@ -166,24 +166,23 @@ class QINCM:
         Read json file with following format:
 
         {
-          'routes': {route_index, list of knelpunten per route}
-          {list_of_depth, {route_index, costs_per_route_at_depth_per_day}}
+          [list_of_knelpunten_for_route1]: {depth: costs_per_route_at_depth_per_day},
+          [list_of_knelpunten_for_route2]: {depth: costs_per_route_at_depth_per_day},
+          ...
         }
 
         e.g. (truncated notation)
 
         {
-          'routes': {0: [], 1: [A, B], 2: [B,C]},
-          2: {0: 1000, 1: 2000, 2: 1500},
-          3: {0: 2000, 1: 3000, 2: 1800}
+          [A, B]: {0.0: 1000, 1.0: 2000, 2.0: 1500},
+          [B, C]: {0.0: 2000, 1.0: 3000, 2.0: 1800}
         }
 
         """
         # Read output
         routes_depth_costs = pd.read_json(routes_depth_costs_file, convert_dates=False, convert_axes=False)
-        routes_depth_costs = routes_depth_costs.set_index('routes').T
+        routes_depth_costs.columns = [frozenset(i[1:-1].split(',')) for i in routes_depth_costs.columns]
         routes_depth_costs.index = [float(c) for c in routes_depth_costs.index]
-        routes_depth_costs.columns = [frozenset(i) for i in routes_depth_costs.columns]
 
         self.routes = routes_depth_costs.columns
 
