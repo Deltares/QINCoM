@@ -181,7 +181,8 @@ class QINCM:
         """
         # Read output
         routes_depth_costs = pd.read_json(routes_depth_costs_file, convert_dates=False, convert_axes=False)
-        routes_depth_costs.columns = [frozenset(i[1:-1].split(',')) for i in routes_depth_costs.columns]
+        routes_depth_costs.columns = [frozenset(i[1:-1].split(', ')) for i in routes_depth_costs.columns]
+        routes_depth_costs = routes_depth_costs.rename({frozenset({''}): frozenset()}, axis=1)
         routes_depth_costs.index = [float(c) for c in routes_depth_costs.index]
 
         self.routes = routes_depth_costs.columns
@@ -285,21 +286,21 @@ class QINCM:
         alltrips = {}
         mintrips = {}
         mintrips_increase = {}
-        
+
         routes = self.routes_depth_costs.keys()
 
         discharge_series = np.linspace(Qmin, Qmax, 100)
-        
+
         # Get discharge per knelpunt
         Q_local = self._compute_local_discharge(discharge_series)
-        
+
         # Get depth per knelpunt and convert to draught by using ukc
         QH = self._compute_knelpunt_depth(Q_local) - self.ukc
 
         for r in routes:
             # Depth on route
             r_QH = QH[r]
-            
+
             # Get total costs on this route
             depth_for_route = r_QH.min(axis=1).fillna(999)
             costs_for_route = pd.Series(
@@ -307,7 +308,7 @@ class QINCM:
                 index = discharge_series
             )
             costs_for_route_increase = costs_for_route - costs_for_route.iloc[-1]
-            
+
             for k in r:
 
                 depth = r_QH[k].values
@@ -318,7 +319,7 @@ class QINCM:
                     data=costs_for_all_passing_trips,
                     index=discharge_series
                 )
-                
+
                 # Only select those levels where k is the minimum depth on the route
                 k_minimal = r_QH.idxmin(axis=1) == k
                 mintrips[(r, k)] = costs_for_route.multiply(k_minimal, axis=0)
