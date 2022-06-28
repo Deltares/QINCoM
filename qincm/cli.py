@@ -4,6 +4,7 @@ import click
 from qincm.qincm import QINCM
 import logging
 import json
+from pathlib import Path
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -13,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option('--config', default=None, help="Load a configuration json file or give a json string with all configuration")
-@click.option('--route_depth_costs_file', default="../data/testmodel_4p/route_depth_costs.json", help='input file of costs per route')
-@click.option('--knelpunt_discharge_depth_file', default="../data/testmodel_4p/knelpunt_discharge_waterdepth.json", help='input file (or json string) of discharge depth relations')
+@click.option('--route_depth_costs_file', default="data/testmodel_4p/route_depth_costs.json", help='input file of costs per route')
+@click.option('--knelpunt_discharge_depth_file', default="data/testmodel_4p/knelpunt_discharge_waterdepth.json", help='input file (or json string) of discharge depth relations')
 @click.option('--reference', default="WA_Nijmegen", help='Name of reference point for global mode')
 @click.option('--mode', default="scenario", help="Type of data input (only [scenario] is implemented)")
 @click.option('--discharges', default=None, help="Required if config not given")
@@ -40,8 +41,12 @@ def main(config, route_depth_costs_file, knelpunt_discharge_depth_file, referenc
 
         logger.debug(input_data)
 
-        route_depth_costs_file = input_data["route_depth_costs_file"]
-        knelpunt_discharge_depth_file = input_data["knelpunt_discharge_depth_file"]
+        route_depth_costs_file = Path(input_data["route_depth_costs_file"])
+        knelpunt_discharge_depth_file = Path(input_data["knelpunt_discharge_depth_file"])
+
+        assert route_depth_costs_file.exists()
+        assert knelpunt_discharge_depth_file.exists()
+
         reference = input_data["reference"]
         mode = input_data["mode"]
         discharges = input_data["discharges"]

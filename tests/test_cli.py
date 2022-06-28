@@ -30,17 +30,18 @@ class test_cli(unittest.TestCase):
     def test_CLI_test1_config(self):
         runner = CliRunner()
 
-        inputfile = r'data/test1.json'
+        inputfile = r'tests/data/test1.json'
         result = runner.invoke(cli.main, ['--config', inputfile])
         assert result.exit_code == 0
 
         output = json.loads(result.output)
         self.assertEqual(output["{'WA_Nijmegen'}"], self.test1_output["{'WA_Nijmegen'}"])
 
+
     def test_CLI_test1_configstring(self):
         runner = CliRunner()
 
-        inputfile = r'data/test1.json'
+        inputfile = r'tests/data/test1.json'
         with open(inputfile, 'r') as fin:
             inputfile_data = json.load(fin)
         inputfile_string = json.dumps(inputfile_data)
@@ -55,7 +56,7 @@ class test_cli(unittest.TestCase):
     def test_CLI_test1_params(self):
         runner = CliRunner()
 
-        inputfile = r'data/test1.json'
+        inputfile = r'tests/data/test1.json'
         with open(inputfile, 'r') as fin:
             inputfile_data = json.load(fin)
 

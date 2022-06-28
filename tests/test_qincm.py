@@ -17,7 +17,7 @@ class test_pyFIS(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures"""
-        inputdir = Path('../data/testmodel_4p')
+        inputdir = Path('data/testmodel_4p')
         route_depth_costs_file = inputdir / 'route_depth_costs.json'
         knelpunt_discharge_depth_file = inputdir / 'knelpunt_discharge_waterdepth.json'
 

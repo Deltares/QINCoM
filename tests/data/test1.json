@@ -1,6 +1,6 @@
 {
-    "route_depth_costs_file":  "../data/testmodel_4p/route_depth_costs.json",
-    "knelpunt_discharge_depth_file": "../data/testmodel_4p/knelpunt_discharge_waterdepth.json",
+    "route_depth_costs_file":  "data/testmodel_4p/route_depth_costs.json",
+    "knelpunt_discharge_depth_file": "data/testmodel_4p/knelpunt_discharge_waterdepth.json",
     "reference": "WA_Nijmegen",
     "mode": "scenario",
     "discharges": [ 500,  600,  700,  800,  900, 1000, 1100, 1200, 1300,
