@@ -3,8 +3,8 @@ QINCM
 =====
 
 .. image:: https://readthedocs.org/projects/qincom/badge/?version=latest
-:target: https://qincom.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+        :target: https://qincom.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
 
 Tool for quickly computing the costs of inland shipping due to limited navigational depth
 

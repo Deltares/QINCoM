@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'QINCM'
-copyright = "2021, Jurjen de Jong"
+copyright = "2022, Jurjen de Jong"
 author = "Jurjen de Jong"
 
 # The version info for the project you're documenting, acts as replacement
