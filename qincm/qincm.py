@@ -79,22 +79,30 @@ class QINCM:
 
         return costs
 
-    def _compute_local_discharge(self, discharges):
+    def _compute_local_discharge(self, discharges) -> pd.DataFrame:
+        """
+        For a given discharge series (global or local) expand and format to local discharge
+        
+        """
         if np.ndim(discharges) == 1:
             # Only reference discharge is given, compute local discharge from Q-Q-relation
             Q_ref = discharges
 
+            # Initialise DataFrame
             if isinstance(discharges, pd.Series):
                 Q_local = pd.DataFrame(index=discharges.index)
             else:
                 Q_local = pd.DataFrame(index=Q_ref)  # The index is only for convenience.
 
+            # Fill DataFrame with local discharges
             for k, QQ in self.knelpunt_discharge_distribution.items():
                 Q_local[k] = QQ(Q_ref)
         else:
             k_names = self.knelpunt_names
 
+            # Reformat DataFarme
             if isinstance(discharges, pd.DataFrame):
+                # I'm not sure why this was necesssary ?
                 Q_local = pd.DataFrame(data=discharges, columns=k_names, index=discharges.index)
             else:
                 Q_local = pd.DataFrame(data=discharges, columns=k_names)
@@ -102,11 +110,12 @@ class QINCM:
                 Q_local.index = Q_local[self.knelpunt_reference]  # The index is only for convenience.
         return Q_local
 
+
     def costs_per_discharge(self, discharges) -> pd.DataFrame:
         """
         Compute total costs per discharge
 
-        param discharges: list of unique discharges. ALso supports timeseries
+        param discharges: list of unique discharges. Also supports timeseries
 
         returns: Series (index=discharges)
         """
@@ -204,7 +213,7 @@ class QINCM:
 
         self.routes_depth_costs = depth_costs_functions
 
-    def _read_knelpunt_discharge_depth(self, knelpunt_discharge_depth_file: Union[str, Path], reference=None):
+    def _read_knelpunt_discharge_depth(self, knelpunt_discharge_depth_file: Union[str, Path], reference=None, depth_correction: dict=None):
         """
         Read json file with for each knelpunt the discharge-depth relation. The discharges for all knelpunten (probably)
         need to be identical
@@ -235,15 +244,19 @@ class QINCM:
         else:
             self.knelpunt_reference = reference
 
+        if depth_correction is None: 
+            depth_correction = {}
+
 
         self.knelpunt_names = list(discharge_depth.keys())
 
+        # For each knelpunt, create a discharge_depth interpolation function
         self.knelpunt_discharge_depth = {}
         knelpunt_discharge = {}
         for k, QD in discharge_depth.items():
             Q, D = zip(*QD.items())
-            Q = [float(q) for q in Q]
-            D = [float(d) for d in D]
+            Q = np.array(Q, dtype=float)
+            D = np.array(D, dtype=float) + depth_correction.get(k, 0.0)
 
             # Make this an interpolation function, incl. extrapolation
             discharge_depth_function = interp1d(
@@ -336,7 +349,7 @@ class QINCM:
 
 if __name__ == '__main__':
 
-    inputdir = Path('../data')
+    inputdir = Path('../data/testmodel_4p')
 
     M = QINCM(inputdir / 'route_depth_costs.json',
               inputdir / 'knelpunt_discharge_waterdepth.json',
