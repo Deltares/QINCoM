@@ -7,7 +7,7 @@ The tool can be run in both in CLI-mode by calling qincm.exe or by usage in pyth
 CLI
 ###
 
-In CLI-mode only the 
+In CLI-mode is currently only available for scenario mode. This function requires the input of both discharges and occurances::
 
     qincm
           --route_depth_costs_file data\testmodel_4p\route_depth_costs.json
@@ -22,7 +22,7 @@ Python
 
 To use QINCM in a project. 
 
-Initiate the model:
+Initiate the model::
 
     import qincm
     from pathlib import Path
@@ -38,7 +38,7 @@ Initiate the model:
         reference='WA_Nijmegen'
     )
 
-Calculate costs per discharge
+Calculate costs per discharge::
 
     import numpy as np
     
@@ -46,7 +46,7 @@ Calculate costs per discharge
     M.costs_per_discharge(discharges)
 
 
-Calculate for timeseries
+Calculate for timeseries::
 
     import pandas as pd
     

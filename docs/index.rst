@@ -6,12 +6,8 @@ Welcome to QINCM's documentation!
    :caption: Contents:
 
    readme
-   installation
    usage
    modules
-   contributing
-   authors
-   history
 
 Indices and tables
 ==================

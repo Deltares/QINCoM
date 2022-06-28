@@ -2,10 +2,14 @@
 QINCM
 =====
 
+.. image:: https://readthedocs.org/projects/qincom/badge/?version=latest
+:target: https://qincom.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
+
 Tool for quickly computing the costs of inland shipping due to limited navigational depth
 
 * Free software: MIT license
-* Documentation: https://qincm.readthedocs.io.
+* Documentation: https://qincom.readthedocs.io.
 
 
 How to install
