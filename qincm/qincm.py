@@ -102,7 +102,7 @@ class QINCM:
                 Q_local.index = Q_local[self.knelpunt_reference]  # The index is only for convenience.
         return Q_local
 
-    def costs_per_discharge(self, discharges: Union) -> pd.DataFrame:
+    def costs_per_discharge(self, discharges) -> pd.DataFrame:
         """
         Compute total costs per discharge
 
