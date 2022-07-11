@@ -156,8 +156,12 @@ In the /data a couple datasets are included that have been used in recent projec
 
 The datasets produced by "QINCM preprocessing_KBN.ipynb" produce the following cost functions:
 
-* Transportkosten (route_depth_costs.json): Toename kosten door toename variabele vaarkosten
+Direct effect of limited water depth:
 * Vracht potentieel (route_depth_tonnage_potential.json): Ieder schip vaart met maximale capaciteit 
-* Vervoerde vracht (route_depth_tonnage_feasible.json): Afname vervoerde vracht, als de lading nog minder dan 20% wordt meegenomen
-* Reizen (route_depth_trips.json): Toename intensiteit
 * Vracht reactie (route_depth_tonnage.json): Aangenomen dat huidige reizen gelijk blijven, hoeveel neemt de vracht dan af
+* Vervoerde vracht (route_depth_tonnage_feasible.json): Afname vervoerde vracht, als de lading nog minder dan 20% wordt meegenomen
+
+Reaction by shipping sector when assumed that all cargo must be transported:
+* Reizen (route_depth_trips.json): Toename intensiteit
+* Transportkosten (route_depth_costs.json): Toename kosten door toename variabele vaarkosten
+
