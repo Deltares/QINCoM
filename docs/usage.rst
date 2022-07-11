@@ -4,6 +4,10 @@ Usage
 
 The tool can be run in both in CLI-mode by calling qincm.exe or by usage in python.
 
+Further documentation (in Dutch) is available in the memo below:
+
+`De Jong, J. (2021) Quick Inland Navigation Cost Model (QINCoM) voor een snelle berekening van het effect van laagwater en maatregelen op kosten van de binnenvaartsector . Deltares memo 11205272-005-ZWS-0003, d.d. december 2021 v1.0 <https://pub.kennisbank.deltares.nl/Details/fullCatalogue/1000020684>`_
+
 CLI
 ###
 
@@ -138,3 +142,22 @@ Note that this does not necessary need to be a cost in euros, but might also be 
             "10.0":2626653.79
         }
     }
+	
+Data sets
+#########
+
+In the /data a couple datasets are included that have been used in recent projects or for testing. These can be used for future projects.  The folder contains the following datasets:
+
+* testmodel_4p: Test model with 4 bottlenecks as described in De Jong (2021). Produced by notebooks/0_preprocessing/QINCM preprocessing_testmodel.ipynb
+* testmodel_15p: Test model with 15 bottlenecks as described in De Jong (2021). Produced by notebooks/0_preprocessing/QINCM preprocessing_testmodel.ipynb
+* application: Best available data set that describes the current system. It is based on results from Klimaatbestendige Netwerken. Most of the background (up to v0.5) is described in De Jong (2021). The latest additions (v0.6) is a correction to the 'tonnage feasible' code. Produced by notebooks/0_preprocessing/QINCM preprocessing_KBN.ipynb. This notebook also contains the track of the history.
+* application_WLO2050H. Identical to application. But with cost functions based on WLO2050H shipping intensity.
+
+
+The datasets produced by "QINCM preprocessing_KBN.ipynb" produce the following cost functions:
+
+* Transportkosten (route_depth_costs.json): Toename kosten door toename variabele vaarkosten
+* Vracht potentieel (route_depth_tonnage_potential.json): Ieder schip vaart met maximale capaciteit 
+* Vervoerde vracht (route_depth_tonnage_feasible.json): Afname vervoerde vracht, als de lading nog minder dan 20% wordt meegenomen
+* Reizen (route_depth_trips.json): Toename intensiteit
+* Vracht reactie (route_depth_tonnage.json): Aangenomen dat huidige reizen gelijk blijven, hoeveel neemt de vracht dan af
